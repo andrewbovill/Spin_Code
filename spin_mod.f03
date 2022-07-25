@@ -1,6 +1,7 @@
       module spin_mod
 !
-!     This module supports the program spin.
+!     This module supports the main program "spin.f03".
+!     Contains subroutines called in main program 
 !
 !     -A. J. Bovill, 2022.
 !
@@ -26,13 +27,17 @@
 !PROCEDURE Sz**2 value
 !
       subroutine SpinsquaredSz(NElectrons,NElAlpha,NElBeta,SZsquared)
-
-
+!
+!     Calculates Spinsquared Sz value. Equation from 
+!     Szabo and Ostlund page 107
+!
       implicit none
 
       integer(kind=int64),intent(in)::NElectrons,NElAlpha,NElBeta
       type(MQC_Variable),intent(out)::SZsquared
       
+!     Need float values from all integers
+
       SZsquared = (float(NElAlpha - NElBeta)/float(2))*((float(NElAlpha - NElBeta)/float(2))+float(1))
 
       end subroutine SpinsquaredSz
@@ -45,11 +50,14 @@
 
       integer(kind=int64),intent(in)::NElectrons,NElAlpha,NElBeta
       integer::i,j
-      real(kind=real64)::tmp
+      real(kind=real64)::Overlaptmp
       type(MQC_Variable),intent(in)::SZsquared,Calpha,Cbeta,Smatrix
       type(MQC_Variable),intent(out)::Stotsquared
 
 !     Temp matrices for Matmul operations
+!     MQC does not incorporate slicing with object types
+!     So you need intrinsic fortran matrices.
+
       type(MQC_Variable)::tmpMQCvar,tmpMQCvar1,tmpMQCvar2
       real(kind=real64),allocatable,dimension(:,:)::tmpMatrixS,  &
         tmpMatrixCa,tmpMatrixCb,Overlaptot,Sz
@@ -61,10 +69,10 @@
       Overlaptot = MatMul(Transpose(tmpMatrixCa(:,1:NElAlpha)),  &
         MatMul(tmpMatrixS,tmpMatrixCb(:,1:NElBeta)))
 
-      tmp = 0
+      Overlaptmp = 0
       do i = 1,NElAlpha
         do j = 1,NElBeta
-          tmp =tmp + abs(Overlaptot(i,j)*Overlaptot(i,j))
+          Overlaptmp = Overlaptmp + abs(Overlaptot(i,j)*Overlaptot(i,j))
         end do
       end do
 
