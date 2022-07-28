@@ -38,7 +38,6 @@ INCLUDE 'spin_mod.f03'
  1030 Format(1x,'Hello World!!')
  8999 Format(/,1x,'END OF SPIN PROGRAM')
 
-      write(*,*) "Seed Project"
       write(IOut,1030)
       call mqc_version_print(iOut)
 
